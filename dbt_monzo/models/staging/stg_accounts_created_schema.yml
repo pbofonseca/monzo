@@ -1,0 +1,18 @@
+# Schema and tests for stg_accounts_created
+# Uniqueness on (account_id_hashed, created_ts) is asserted by the singular test
+# in tests/stg_accounts_created_no_duplicates.sql
+
+version: 2
+
+models:
+  - name: stg_accounts_created
+    description: Staging layer for account_created. Deduplicated on (account_id_hashed, created_ts).
+    columns:
+      - name: account_id_hashed
+        description: Hashed account identifier (part of natural key with created_ts)
+      - name: user_id_hashed
+        description: Hashed user identifier
+      - name: account_type
+        description: Type of account
+      - name: created_ts
+        description: Account creation timestamp (part of natural key with account_id_hashed)
