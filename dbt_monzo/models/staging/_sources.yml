@@ -10,5 +10,9 @@ sources:
     tables:
       # Add your real tables from monzo_datawarehouse here. Example usage in SQL:
       #   select * from {{ source('monzo_datawarehouse', 'your_table') }}
+      - name: account_created
+        description: Raw account created events
+      - name: account_closed
+        description: Raw account closed events
       - name: _placeholder
         description: Replace with real table names from monzo_datawarehouse

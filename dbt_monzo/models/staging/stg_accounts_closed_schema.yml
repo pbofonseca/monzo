@@ -1,0 +1,14 @@
+# Schema and tests for stg_accounts_closed
+# Uniqueness on (account_id_hashed, closed_ts) is asserted by the singular test
+# in tests/stg_accounts_closed_no_duplicates.sql
+
+version: 2
+
+models:
+  - name: stg_accounts_closed
+    description: Staging layer for account_closed. Deduplicated on (account_id_hashed, closed_ts).
+    columns:
+      - name: account_id_hashed
+        description: Hashed account identifier (part of natural key with closed_ts)
+      - name: closed_ts
+        description: Account closure timestamp (part of natural key with account_id_hashed)
