@@ -1,0 +1,14 @@
+# Source: analytics-take-home-test.monzo_datawarehouse
+# Add your actual table names under 'tables' and reference in models as: source('monzo_datawarehouse', 'table_name')
+version: 2
+
+sources:
+  - name: monzo_datawarehouse
+    description: Raw / source data in BigQuery dataset monzo_datawarehouse
+    database: analytics-take-home-test
+    schema: monzo_datawarehouse
+    tables:
+      # Add your real tables from monzo_datawarehouse here. Example usage in SQL:
+      #   select * from {{ source('monzo_datawarehouse', 'your_table') }}
+      - name: _placeholder
+        description: Replace with real table names from monzo_datawarehouse

@@ -1,0 +1,33 @@
+# dbt
+dbt_monzo/target/
+dbt_monzo/dbt_packages/
+dbt_monzo/logs/
+dbt_monzo/*.log
+# Do not commit credentials or local profile
+dbt_monzo/profiles.yml
+dbt_monzo/.user.yml
+dbt_monzo/.env
+dbt_monzo/.env.*
+
+# Virtual environments
+.venv/
+dbt_monzo/.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.pyo
+.Python
+*.so
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+*.swp
+*.swo
+*~
+
+# Service account / credential keys (never commit)
+*-key.json
+*credentials*.json
+*.pem

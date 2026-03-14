@@ -1,0 +1,9 @@
+target/
+dbt_packages/
+logs/
+*.log
+.env
+.env.*
+.venv/
+# Do not commit real credentials (use profiles.yml.example as template, DBT_PROFILES_DIR=. for local)
+profiles.yml

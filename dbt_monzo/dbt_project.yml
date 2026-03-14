@@ -1,0 +1,41 @@
+# dbt_monzo - dbt project for BigQuery
+# https://docs.getdbt.com/reference/dbt_project.yml
+
+name: "dbt_monzo"
+version: "1.0.0"
+config-version: 2
+
+# This setting configures which "profile" dbt uses for this project.
+# We'll create this profile in profiles.yml (e.g. in ~/.dbt/)
+profile: "dbt_monzo"
+
+# Directories for dbt to use
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+# Where dbt writes compiled and run artifacts
+target-path: "target"
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+# BigQuery: staging → psfs_ae_stg, intermediate → psfs_ae_int, marts → psfs_ae_mrt
+models:
+  dbt_monzo:
+    staging:
+      +materialized: view
+      +schema: stg
+    intermediate:
+      +materialized: view
+      +schema: int
+    marts:
+      +materialized: table
+      +schema: mrt
+
+vars:
+  # Optional: override in CLI with --vars '{"key": "value"}'
+  # example_var: "default_value"

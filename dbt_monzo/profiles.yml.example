@@ -1,0 +1,29 @@
+# BigQuery profile for dbt_monzo
+# Copy this file to ~/.dbt/profiles.yml and fill in your values.
+# Do NOT commit profiles.yml (with real credentials) to version control.
+#
+# Quick setup:
+#   cp dbt_monzo/profiles.yml.example ~/.dbt/profiles.yml
+#   # Edit ~/.dbt/profiles.yml with your GCP/dataset details
+
+dbt_monzo:
+  target: dev
+  outputs:
+    dev:
+      type: bigquery
+      method: oauth  # or: service_account
+      project: "YOUR_GCP_PROJECT_ID"
+      dataset: "YOUR_DATASET_ID"   # default schema where dbt builds models
+      threads: 4
+      # Optional: fixed location for datasets
+      # location: "EU"
+
+    # Service account (for CI/production): uncomment and set keyfile
+    # prod:
+    #   type: bigquery
+    #   method: service_account
+    #   project: "YOUR_GCP_PROJECT_ID"
+    #   dataset: "YOUR_PROD_DATASET_ID"
+    #   threads: 8
+    #   keyfile: "/path/to/your-service-account.json"
+    #   # keyfile_json: '{"type": "service_account", ...}'  # or inline JSON
