@@ -1,0 +1,56 @@
+---
+description: Use Conventional Commits for all git commit messages
+alwaysApply: true
+---
+
+# Conventional Commits
+
+Use the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) format for every git commit in this project.
+
+## Format
+
+```
+<type>[optional scope]: <description>
+
+[optional body]
+
+[optional footer(s)]
+```
+
+## Types
+
+- **feat:** new feature (MINOR in SemVer)
+- **fix:** bug fix (PATCH in SemVer)
+- **build:** build system, dependencies
+- **chore:** maintenance, no code change
+- **ci:** CI config
+- **docs:** documentation only
+- **style:** formatting, no logic change
+- **refactor:** code change, no feature/fix
+- **perf:** performance improvement
+- **test:** adding or updating tests
+
+## Scope (optional)
+
+Noun in parentheses for context, e.g. `feat(staging):`, `fix(dbt):`.
+
+## Examples
+
+```
+feat(staging): add stg_accounts_created with deduplication
+```
+
+```
+fix: prevent duplicate rows in account_created staging
+```
+
+```
+docs: correct spelling in README
+```
+
+## Breaking changes
+
+- In footer: `BREAKING CHANGE: <description>`
+- Or append `!` after type/scope: `feat!: drop Node 6`
+
+When the user asks to commit, write the message in this format and use it in the commit command.
