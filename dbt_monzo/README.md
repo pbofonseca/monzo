@@ -1,141 +1,61 @@
 # dbt_monzo
 
-dbt project for BigQuery.
-
-**Data flow:**
-- **Source (read-only):** `analytics-take-home-test.monzo_datawarehouse` — raw data, referenced via `source('monzo_datawarehouse', 'table_name')`
-- **Downstream (dbt output):** `psfs_ae_stg`, `psfs_ae_int`, `psfs_ae_mrt` — create once with `./scripts/create_psfs_ae_datasets.sh`
-
-## Next steps (run these locally)
-
-1. **Install Google Cloud SDK** (if you don’t have it).
-   - **If `brew install --cask google-cloud-sdk` fails** with “Provided python path ... does not exist”:
-     ```bash
-     ./scripts/fix_gcloud_python.sh
-     brew install --cask google-cloud-sdk
-     ```
-     The script creates the path the cask expects and re-runs the install.
-   - **Otherwise** set Python and install:
-     ```bash
-     export CLOUDSDK_PYTHON=/usr/bin/python3
-     brew install --cask google-cloud-sdk
-     ```
-   If the cask asks to add `gcloud` to your PATH, choose “Yes”. If `gcloud` is still not found after install, open a **new terminal** or run:
-   ```bash
-   source "$(brew --prefix)/share/google-cloud-sdk/path.zsh.inc"
-   ```
-   (Use `path.bash.inc` and `~/.bash_profile` if you use bash.)
-
-2. **Authenticate and run dbt** (from the `dbt_monzo` folder):
-   ```bash
-   ./scripts/setup_and_run.sh
-   ```
-   This will prompt you to log in in the browser (once), then run `dbt debug` and `dbt run`.
-
-   Or do it manually:
-   ```bash
-   gcloud auth application-default login
-   source .venv/bin/activate
-   DBT_PROFILES_DIR=. dbt debug
-   DBT_PROFILES_DIR=. dbt run
-   ```
-
-## Prerequisites
-
-- Python 3.8+
-- [dbt-bigquery](https://pypi.org/project/dbt-bigquery/) installed:  
-  `pip install dbt-bigquery`
-- Access to a Google Cloud project with BigQuery enabled
+dbt project for transforming and modeling data in **BigQuery**. This project follows dbt best practices: moving data from **source-conformed** (raw) to **business-conformed** (analytics-ready) layers.
 
 ---
 
-## Configuration checklist
+## Business context & objectives
 
-Use this section to gather everything needed before running dbt.
+<!--
+  Add here the business needs and objectives from your requirements document.
+  Source: https://drive.google.com/file/d/1J6me8K3I-u-5eSM4reKA4SwIFl5KN4bh/view
 
-### 1. BigQuery connection (profiles.yml)
+  Suggested sections to fill from the PDF:
+  - Business goals (e.g. reporting, self-serve analytics, compliance)
+  - Key stakeholders and consumers of the data
+  - Main metrics and definitions the business cares about
+  - Scope (which domains, sources, or use cases this project covers)
+  - Success criteria or SLAs if any
+-->
 
-Create your profile from the example:
+**Business goals**
 
-```bash
-mkdir -p ~/.dbt
-cp profiles.yml.example ~/.dbt/profiles.yml
-```
+- *(Describe the main business goals this project supports — e.g. unified reporting, self-serve analytics, regulatory reporting.)*
 
-Edit `~/.dbt/profiles.yml` and set:
+**Key stakeholders & consumers**
 
-| Field | Description | Example |
-|-------|-------------|---------|
-| **project** | Your Google Cloud project ID | `my-gcp-project` |
-| **dataset** | Default BigQuery dataset (schema) where dbt builds models | `dbt_dev` or `analytics` |
-| **method** | Auth method: `oauth` (local) or `service_account` (CI/prod) | `oauth` |
-| **keyfile** | Path to service account JSON key (only if `method: service_account`) | `/path/to/key.json` |
+- *(Who uses these models? Analytics, finance, product, etc.)*
 
-Optional:
+**Main metrics & definitions**
 
-- **threads**: Number of threads (default `4`).
-- **location**: BigQuery dataset location, e.g. `EU` or `US`.
-- **timeout_seconds**: Query timeout.
+- *(List the main metrics and their business definitions so the project stays aligned with the same language.)*
 
-### 2. Authentication
+**Scope**
 
-**Development (oauth)**
+- *(Which data domains, sources, or use cases are in scope for this project.)*
 
-- Run `dbt debug` or `dbt run`; you’ll be prompted to sign in with Google.
-- Or: `gcloud auth application-default login` then use `method: oauth`.
+**Success criteria**
 
-**CI / production (service account)**
+- *(How we know the project is successful — e.g. report coverage, freshness, adoption.)*
 
-1. In GCP: IAM & Admin → Service accounts → Create.
-2. Grant roles: **BigQuery Data Editor**, **BigQuery Job User** (and **BigQuery User** if required).
-3. Create a JSON key and download it.
-4. In `profiles.yml`: set `method: service_account` and `keyfile: "/path/to/key.json"` (or use `keyfile_json` with inline JSON).
+---
 
-### 3. Source vs downstream datasets
+## Data flow
 
-- **Source:** `monzo_datawarehouse` — define tables in `models/staging/_sources.yml` and use `{{ source('monzo_datawarehouse', 'table_name') }}` in models.
-- **Downstream (per layer):** Create once with the script:
-  ```bash
-  ./scripts/create_psfs_ae_datasets.sh
-  ```
-  This creates (project `analytics-take-home-test`, location `US`, with descriptions):
-  - **psfs_ae_stg** — staging (views)
-  - **psfs_ae_int** — intermediate (views)
-  - **psfs_ae_mrt** — marts (tables)
+| Layer | BigQuery dataset | Purpose |
+|-------|------------------|---------|
+| **Source** (read-only) | `monzo_datawarehouse` | Raw data; referenced in dbt via `source('monzo_datawarehouse', 'table_name')` |
+| **Staging** | `psfs_ae_stg` | Light cleaning, renaming, typing — source-conformed building blocks |
+| **Intermediate** | `psfs_ae_int` | Business logic, joins, and transformations (not exposed to end users) |
+| **Marts** | `psfs_ae_mrt` | Analytics-ready tables for reporting and consumption |
 
-  Override project/location: `BQ_PROJECT_ID=myproject BQ_LOCATION=EU ./scripts/create_psfs_ae_datasets.sh`
-
-### 4. Project layout (dbt_project.yml)
-
-- **name**: `dbt_monzo`
-- **profile**: `dbt_monzo`
-- **Staging** → dataset `psfs_ae_stg` (views)
-- **Intermediate** → dataset `psfs_ae_int` (views)
-- **Marts** → dataset `psfs_ae_mrt` (tables)
-
-### 5. Verify setup
-
-From the project root (`dbt_monzo/`), use the project venv and profile:
+Create the downstream datasets once:
 
 ```bash
-source .venv/bin/activate
-DBT_PROFILES_DIR=. dbt debug
+./scripts/create_psfs_ae_datasets.sh
 ```
 
-If using OAuth, authenticate first: `gcloud auth application-default login`
-
-This checks:
-
-- Profile and connection to BigQuery
-- That the default dataset exists (or can be created if you have permission)
-
-Then:
-
-```bash
-dbt run
-```
-
-(Will succeed with no models; add models under `models/staging` and `models/marts` as needed.)
+Override project/location: `BQ_PROJECT_ID=myproject BQ_LOCATION=EU ./scripts/create_psfs_ae_datasets.sh`
 
 ---
 
@@ -143,30 +63,128 @@ dbt run
 
 ```
 dbt_monzo/
-├── dbt_project.yml
-├── profiles.yml         # base dataset: psfs_ae → layers: psfs_ae_stg, _int, _mrt
+├── README.md                 # This file — project overview and business context
+├── dbt_project.yml           # Project config; staging/int/marts → psfs_ae_*
+├── profiles.yml              # BigQuery connection (project, dataset, auth)
 ├── models/
-│   ├── staging/        # → psfs_ae_stg
-│   │   ├── _sources.yml
+│   ├── staging/              # → psfs_ae_stg (views)
+│   │   ├── _sources.yml      # Source definitions for monzo_datawarehouse
 │   │   └── *.sql
-│   ├── intermediate/   # → psfs_ae_int
-│   └── marts/          # → psfs_ae_mrt
+│   ├── intermediate/        # → psfs_ae_int (views)
+│   └── marts/               # → psfs_ae_mrt (tables)
 ├── scripts/
-│   ├── create_psfs_ae_datasets.sh  # Create psfs_ae_stg, psfs_ae_int, psfs_ae_mrt in BQ
+│   ├── create_psfs_ae_datasets.sh
 │   └── setup_and_run.sh
 ├── macros/, tests/, snapshots/, seeds/, analyses/
 ```
 
 ---
 
+## Getting started
+
+### 1. Prerequisites
+
+- Python 3.8+
+- [dbt-bigquery](https://pypi.org/project/dbt-bigquery/) (e.g. via project venv: `pip install dbt-bigquery`)
+- Access to Google Cloud with BigQuery enabled
+
+### 2. Google Cloud SDK (if needed)
+
+If `brew install --cask google-cloud-sdk` fails with “Provided python path ... does not exist”:
+
+```bash
+./scripts/fix_gcloud_python.sh
+brew install --cask google-cloud-sdk
+```
+
+Otherwise:
+
+```bash
+export CLOUDSDK_PYTHON=/usr/bin/python3
+brew install --cask google-cloud-sdk
+```
+
+If `gcloud` is not in PATH after install:
+
+```bash
+source "$(brew --prefix)/share/google-cloud-sdk/path.zsh.inc"
+```
+
+### 3. Authenticate and run dbt
+
+From the `dbt_monzo` folder:
+
+```bash
+./scripts/setup_and_run.sh
+```
+
+Or manually:
+
+```bash
+gcloud auth application-default login
+source .venv/bin/activate
+DBT_PROFILES_DIR=. dbt debug
+DBT_PROFILES_DIR=. dbt run
+```
+
+---
+
+## Configuration
+
+### BigQuery connection (`profiles.yml`)
+
+Use the project’s `profiles.yml` (or copy from `profiles.yml.example` to `~/.dbt/profiles.yml`). Set:
+
+| Field | Description | Example |
+|-------|-------------|---------|
+| **project** | GCP project ID | `analytics-take-home-test` |
+| **dataset** | Base dataset (schema) for dbt; layers get suffixes | `psfs_ae` → psfs_ae_stg, _int, _mrt |
+| **method** | `oauth` (local) or `service_account` (CI/prod) | `oauth` |
+| **keyfile** | Path to service account JSON (only if `method: service_account`) | `~/.config/gcloud/dbt-sa-key.json` |
+
+Optional: `threads`, `location` (e.g. `US`), `timeout_seconds`.
+
+### Authentication
+
+- **Development:** `gcloud auth application-default login` then `method: oauth`.
+- **CI/production:** Create a service account with **BigQuery Data Editor** and **BigQuery Job User**, download a JSON key, set `method: service_account` and `keyfile` in `profiles.yml`.
+
+### Verify setup
+
+```bash
+source .venv/bin/activate
+DBT_PROFILES_DIR=. dbt debug
+```
+
+Then:
+
+```bash
+DBT_PROFILES_DIR=. dbt run
+```
+
+---
+
+## Documentation (dbt docs)
+
+Generate and serve the dbt docs site (model DAG, descriptions, tests):
+
+```bash
+DBT_PROFILES_DIR=. dbt docs generate
+DBT_PROFILES_DIR=. dbt docs serve
+```
+
+Add `description:` and column-level docs in your YAML (e.g. `_sources.yml`, model schema files) so the generated docs are useful for stakeholders.
+
+---
+
 ## Quick reference
 
 | Task | Command |
-|------|--------|
-| Test connection | `dbt debug` |
-| Run models | `dbt run` |
-| Run tests | `dbt test` |
-| Build docs | `dbt docs generate && dbt docs serve` |
-| Use prod profile | `dbt run --target prod` |
+|------|---------|
+| Test connection | `DBT_PROFILES_DIR=. dbt debug` |
+| Run models | `DBT_PROFILES_DIR=. dbt run` |
+| Run tests | `DBT_PROFILES_DIR=. dbt test` |
+| Build docs | `DBT_PROFILES_DIR=. dbt docs generate && dbt docs serve` |
+| Production target | `DBT_PROFILES_DIR=. dbt run --target prod` |
 
-Fill in **project**, **dataset**, and **method** (and **keyfile** for service account) in `~/.dbt/profiles.yml`, then run `dbt debug` to confirm everything is set.
+Run all commands from the `dbt_monzo` directory with the venv activated and `DBT_PROFILES_DIR=.` so the project’s `profiles.yml` is used.
