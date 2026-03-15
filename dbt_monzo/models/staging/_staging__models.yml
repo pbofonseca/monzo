@@ -29,5 +29,9 @@ models:
     columns:
       - name: account_id_hashed
         description: Hashed account identifier (part of natural key with reopened_ts)
+        data_tests:
+          - not_null
       - name: reopened_ts
         description: Account reopen timestamp (part of natural key with account_id_hashed)
+        data_tests:
+          - not_null

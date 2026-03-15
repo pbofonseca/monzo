@@ -9,6 +9,8 @@ models:
       Unified timeline of account lifecycle events (created, closed, reopened).
       One row per event per account. Built from stg_accounts_created, stg_accounts_closed,
       and stg_accounts_reopened. Use for account status history, tenure, or funnel analysis.
+      Business rule (enforced by singular test int_account_status_history_one_created_first):
+      exactly one 'created' per account, and it must be the first event; then only closed/reopened may follow.
     columns:
       - name: account_id_hashed
         description: Hashed account identifier; links all events for the same account.

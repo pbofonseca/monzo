@@ -1,0 +1,15 @@
+# Descriptions for singular data tests in this directory.
+# See dbt docs: https://docs.getdbt.com/docs/build/data-tests#singular-data-tests
+# Tests are .sql files; dbt runs any select that returns rows as failures.
+
+data_tests:
+  - name: stg_accounts_created_no_duplicates
+    description: Ensures no duplicate (account_id_hashed, created_ts) in stg_accounts_created.
+  - name: stg_accounts_closed_no_duplicates
+    description: Ensures no duplicate (account_id_hashed, closed_ts) in stg_accounts_closed.
+  - name: stg_accounts_reopened_no_duplicates
+    description: Ensures no duplicate (account_id_hashed, reopened_ts) in stg_accounts_reopened.
+  - name: int_account_status_history_one_created_first
+    description: |
+      Business rule: each account has exactly one 'created' event and it must be the first event (by event_ts).
+      After that, only closed/reopened may occur (closed and reopened can repeat).
