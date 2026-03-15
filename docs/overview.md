@@ -5,7 +5,8 @@ This dbt project transforms and models data in **BigQuery**, following the path 
 
 ## Data flow
 
-- **Source:** `monzo_datawarehouse` (read-only)
+- **Sources** (`models/sources/`): All raw tables from the project dataset are declared here; see [sources-layer.md](sources-layer.md).
+- **Source data:** `monzo_datawarehouse` (read-only)
 - **Staging** (`psfs_ae_stg`): Light cleaning and typing
 - **Intermediate** (`psfs_ae_int`): Business logic and joins
 - **Marts** (`psfs_ae_mrt`): Analytics-ready tables for reporting

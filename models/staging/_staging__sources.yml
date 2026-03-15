@@ -1,18 +1,3 @@
-# Source: analytics-take-home-test.monzo_datawarehouse
-# Add your actual table names under 'tables' and reference in models as: source('monzo_datawarehouse', 'table_name')
-version: 2
-
-sources:
-  - name: monzo_datawarehouse
-    description: Raw / source data in BigQuery dataset monzo_datawarehouse
-    database: analytics-take-home-test
-    schema: monzo_datawarehouse
-    tables:
-      # Add your real tables from monzo_datawarehouse here. Example usage in SQL:
-      #   select * from {{ source('monzo_datawarehouse', 'your_table') }}
-      - name: account_created
-        description: Raw account created events
-      - name: account_closed
-        description: Raw account closed events
-      - name: account_reopened
-        description: Raw account reopened events
+# Source definitions live in the sources layer: models/sources/_sources__sources.yml
+# Staging models reference them via {{ source('monzo_datawarehouse', 'table_name') }}
+# Do not add a 'sources:' block here — all raw tables must be declared in the sources layer.
