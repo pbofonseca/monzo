@@ -5,6 +5,17 @@
 version: 2
 
 models:
+  - name: dim_date
+    description: |
+      Date dimension (calendar) from dbt_date package. One row per day from 2020-01-01 to 2030-12-31.
+      Use for date attributes (day_of_week, month_name, quarter, prior_year_date, etc.) in reporting.
+    columns:
+      - name: date_day
+        description: Calendar date (one row per day).
+        data_tests:
+          - unique
+          - not_null
+
   - name: _expected_dim_account_periods
     description: |
       Test-support view: one row per active period (created or reopened) from int_account_status_history.

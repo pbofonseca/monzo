@@ -38,5 +38,7 @@ models:
       +schema: mrt
 
 vars:
+  # dbt_date package (dim_date): time zone for date dimension attributes
+  "dbt_date:time_zone": "UTC"
   # Optional: override in CLI with --vars '{"key": "value"}'
   # example_var: "default_value"
