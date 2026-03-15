@@ -16,5 +16,3 @@ sources:
         description: Raw account closed events
       - name: account_reopened
         description: Raw account reopened events
-      - name: _placeholder
-        description: Replace with real table names from monzo_datawarehouse
