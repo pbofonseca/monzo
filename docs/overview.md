@@ -1,5 +1,5 @@
 {% docs __overview__ %}
-# dbt_monzo — Analytics transformations for BigQuery
+# dbt_monzo — Analytics transformations for BigQuery (project root)
 
 This dbt project transforms and models data in **BigQuery**, following the path from **source-conformed** (raw) to **business-conformed** (analytics-ready) layers.
 

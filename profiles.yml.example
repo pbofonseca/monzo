@@ -3,7 +3,7 @@
 # Do NOT commit profiles.yml (with real credentials) to version control.
 #
 # Quick setup:
-#   cp dbt_monzo/profiles.yml.example ~/.dbt/profiles.yml
+#   cp profiles.yml.example ~/.dbt/profiles.yml
 #   # Edit ~/.dbt/profiles.yml with your GCP/dataset details
 
 dbt_monzo:

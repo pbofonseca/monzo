@@ -1,0 +1,26 @@
+# Mart models: dimensions and facts for analytics.
+# Dimensions are built from intermediate models.
+
+version: 2
+
+models:
+  - name: dim_account
+    description: |
+      Account dimension (SCD Type 2) built from int_account_status_history.
+      One row per account per active period: from created or reopened until the next closed (or current).
+      Use valid_from, valid_to, and is_current for point-in-time and current-state joins.
+    columns:
+      - name: account_sk
+        description: Surrogate key; unique per account per version (hash of account_id_hashed and valid_from).
+      - name: account_id_hashed
+        description: Natural key; hashed account identifier.
+      - name: user_id_hashed
+        description: Hashed user identifier (from the account created event).
+      - name: account_type
+        description: Type of account (from the account created event).
+      - name: valid_from
+        description: "Start of this version (timestamp when the account became active: created or reopened)."
+      - name: valid_to
+        description: "End of this version (timestamp when the account was closed); null if is_current."
+      - name: is_current
+        description: True if this is the current active version of the account (valid_to is null).

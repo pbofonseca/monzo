@@ -1,17 +1,16 @@
 # dbt
-dbt_monzo/target/
-dbt_monzo/dbt_packages/
-dbt_monzo/logs/
-dbt_monzo/*.log
+target/
+dbt_packages/
+logs/
+*.log
 # Do not commit credentials or local profile
-dbt_monzo/profiles.yml
-dbt_monzo/.user.yml
-dbt_monzo/.env
-dbt_monzo/.env.*
+profiles.yml
+.user.yml
+.env
+.env.*
 
 # Virtual environments
 .venv/
-dbt_monzo/.venv/
 venv/
 __pycache__/
 *.py[cod]
