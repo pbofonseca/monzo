@@ -14,7 +14,7 @@ with history as (
     select
         account_id_hashed,
         event_ts,
-        event_type,
+        account_status,
         user_id_hashed,
         account_type
     from {{ ref('int_account_status_history') }}
@@ -27,7 +27,7 @@ account_attrs as (
         user_id_hashed,
         account_type
     from history
-    where event_type = 'created'
+    where account_status = 'created'
 ),
 
 -- Period starts: created or reopened
@@ -36,7 +36,7 @@ starts as (
         account_id_hashed,
         event_ts as valid_from
     from history
-    where event_type in ('created', 'reopened')
+    where account_status in ('created', 'reopened')
 ),
 
 -- Period ends: closed events
@@ -45,7 +45,7 @@ closes as (
         account_id_hashed,
         event_ts as closed_ts
     from history
-    where event_type = 'closed'
+    where account_status = 'closed'
 ),
 
 -- Each start gets valid_to = next closed after valid_from (or null if still current)

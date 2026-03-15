@@ -6,7 +6,7 @@ with history as (
     select
         account_id_hashed,
         event_ts,
-        event_type
+        account_status
     from {{ ref('int_account_status_history') }}
 ),
 
@@ -14,10 +14,10 @@ with history as (
 created_count_violations as (
     select
         account_id_hashed,
-        cast(countif(event_type = 'created') as string) as violation_type
+        cast(countif(account_status = 'created') as string) as violation_type
     from history
     group by account_id_hashed
-    having countif(event_type = 'created') != 1
+    having countif(account_status = 'created') != 1
 ),
 
 -- Fail when the first event (by event_ts) per account is not 'created'
@@ -28,11 +28,11 @@ first_event_not_created as (
     from (
         select
             account_id_hashed,
-            event_type,
+            account_status,
             row_number() over (partition by account_id_hashed order by event_ts) as rn
         from history
     )
-    where rn = 1 and event_type != 'created'
+    where rn = 1 and account_status != 'created'
 )
 
 select account_id_hashed, violation_type from created_count_violations
