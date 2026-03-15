@@ -58,14 +58,14 @@ So the failure was **configuration**: the allowed list in the YAML did not match
 
 - **Result:** "Got 3902 results" → **3902 accounts** have a current-count that isn't 1.
 - So for each of those 3902 accounts, either:
-  - **0 current rows** (every dimension row has `valid_to` set → no "open" period), or
-  - **2+ current rows** (more than one row with `valid_to` is null).
+  - **0 current rows** (every dimension row has `valid_to_at` set → no "open" period), or
+  - **2+ current rows** (more than one row with `valid_to_at` is null).
 
-In `dim_account`, `is_current = (valid_to is null)`. So:
+In `dim_account`, `is_current = (valid_to_at is null)`. So:
 
 - **0 current:** The account has only closed periods in the mart (e.g. created → closed, and no reopened). That's valid if the business considers the account closed and we only keep historical rows.
 - **2+ current:** There are two or more **open** periods for the same account (e.g. two "starts" without a "close" between them). That can happen when:
-  - There is a **reopened** event but **no closed** event between **created** and **reopened** in `int_account_status_history`. Then both "created" and "reopened" produce a period with `valid_to = null`, so the same account has two current rows.
+  - There is a **reopened** event but **no closed** event between **created** and **reopened** in `int_account_status_history`. Then both "created" and "reopened" produce a period with `valid_to_at = null`, so the same account has two current rows.
 
 So the failure is either **data** (e.g. missing or extra closed/reopened events) or **business rules** (e.g. whether "0 current" is allowed for closed-only accounts).
 
@@ -96,10 +96,10 @@ So the failure is either **data** (e.g. missing or extra closed/reopened events)
 2. **Inspect one account with 2+ current rows** (replace `ACCOUNT_ID_HASHED` with a real value from the previous query):
 
    ```sql
-   SELECT account_id_hashed, valid_from, valid_to, is_current
+   SELECT account_id_hashed, valid_from_at, valid_to_at, is_current
    FROM `analytics-take-home-test.psfs_ae_mrt.dim_account`
    WHERE account_id_hashed = 'ACCOUNT_ID_HASHED'
-   ORDER BY valid_from;
+   ORDER BY valid_from_at;
    ```
 
    Then check the same account in the intermediate model:
@@ -117,7 +117,7 @@ So the failure is either **data** (e.g. missing or extra closed/reopened events)
 
 - **If "0 current" is valid** (e.g. closed-only accounts): Change the test so it only fails when `current_count > 1` (e.g. allow 0 or 1 current row per account), or add a separate test that only flags `current_count > 1`.
 - **If "2+ current" is a data bug:** Fix upstream data or the logic that builds `int_account_status_history` / `dim_account` so each account has at most one open period (e.g. ensure closed events exist between created and reopened when appropriate).
-- **If the mart logic is wrong:** Adjust `dim_account` so that only the latest period per account can have `valid_to` null (e.g. by deduplicating or by redefining how "current" is set).
+- **If the mart logic is wrong:** Adjust `dim_account` so that only the latest period per account can have `valid_to_at` null (e.g. by deduplicating or by redefining how "current" is set).
 
 ---
 

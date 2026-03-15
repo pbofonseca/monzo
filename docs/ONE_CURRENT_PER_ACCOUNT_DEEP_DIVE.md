@@ -14,13 +14,13 @@
 In `dim_account`:
 
 - **Periods** come from `int_account_status_history`: each **created** or **reopened** is a period start; each **closed** is a period end.
-- **valid_to** = next close after that start (or null if never closed after that start).
-- **is_current** = `(valid_to is null)`.
+- **valid_to_at** = next close after that start (or null if never closed after that start).
+- **is_current** = `(valid_to_at is null)`.
 
 So:
 
-- **0 current:** Account has only closed periods (e.g. created @ T1, closed @ T2). One row, `valid_to = T2` → `is_current = false`. Valid for closed-only accounts.
-- **1 current:** Account has one open period (e.g. created @ T1, no close; or created, closed, reopened @ T3 with no close after T3). One row with `valid_to` null. Correct.
+- **0 current:** Account has only closed periods (e.g. created @ T1, closed @ T2). One row, `valid_to_at = T2` → `is_current = false`. Valid for closed-only accounts.
+- **1 current:** Account has one open period (e.g. created @ T1, no close; or created, closed, reopened @ T3 with no close after T3). One row with `valid_to_at` null. Correct.
 - **2+ current:** Two or more open periods for the same account. Happens when there is a **reopened** event but **no closed** event between **created** and **reopened**. Then both (T1, null) and (T2, null) exist → bug or data issue.
 
 ---

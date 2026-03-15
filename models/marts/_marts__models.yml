@@ -25,7 +25,8 @@ models:
     description: |
       Account dimension (SCD Type 2) built from int_account_status_history.
       One row per account per active period: from created or reopened until the next closed (or current).
-      Use valid_from, valid_to, and is_current for point-in-time and current-state joins.
+      Use valid_from_at, valid_to_at, and is_current for point-in-time and current-state joins.
+      Join to dim_date on valid_from_date = dim_date.date_day (or valid_to_date) for date-based analytics.
     data_tests:
       # Row count reconciliation (MART_TESTING_OUTLINE §2 recommended): mart count = expected periods from history.
       - dbt_expectations.expect_table_row_count_to_equal_other_table:
@@ -33,7 +34,7 @@ models:
             compare_model: ref('_expected_dim_account_periods')
     columns:
       - name: account_sk
-        description: Surrogate key; unique per account per version (hash of account_id_hashed and valid_from).
+        description: Surrogate key; unique per account per version (hash of account_id_hashed and valid_from_at).
         data_tests:
           - unique
           - not_null
@@ -55,13 +56,23 @@ models:
           - accepted_values:
               arguments:
                 values: ['uk_retail_pot', 'uk_retail', 'uk_retail_joint', 'not_informed', 'not_applied']
-      - name: valid_from
+      - name: is_current
+        description: True if this is the current active version of the account (valid_to_at is null).
+        data_tests:
+          - not_null
+      - name: valid_from_date
+        description: "Date of period start (date(valid_from_at)); use to join to dim_date.date_day without transformation."
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_day
+      - name: valid_to_date
+        description: "Date of period end (date(valid_to_at)); null if is_current. Use to join to dim_date.date_day when needed."
+      - name: valid_from_at
         description: "Start of this version (timestamp when the account became active: created or reopened)."
         data_tests:
           - not_null
-      - name: valid_to
+      - name: valid_to_at
         description: "End of this version (timestamp when the account was closed); null if is_current."
-      - name: is_current
-        description: True if this is the current active version of the account (valid_to is null).
-        data_tests:
-          - not_null
