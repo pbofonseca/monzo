@@ -12,34 +12,35 @@
 */
 
 with created as (
-    -- user_id_hashed and account_type only exist on created; keep null when source has null
+    -- user_id_hashed and account_type only on created. Null from source = not_informed.
     select
         cast(account_id_hashed as string) as account_id_hashed,
         cast(created_ts as timestamp) as event_ts,
         'created' as account_status,
-        cast(user_id_hashed as string) as user_id_hashed,
-        cast(account_type as string) as account_type
+        coalesce(cast(user_id_hashed as string), 'not_informed') as user_id_hashed,
+        coalesce(cast(account_type as string), 'not_informed') as account_type
     from {{ ref('stg_accounts_created') }}
 ),
 
 closed as (
-    -- closed/reopened have no user_id_hashed or account_type; explicitly null
+    -- closed/reopened: no user_id_hashed or account_type in schema; not_applied (dim gets these from created).
     select
         cast(account_id_hashed as string) as account_id_hashed,
         cast(closed_ts as timestamp) as event_ts,
         'closed' as account_status,
-        cast(null as string) as user_id_hashed,
-        cast(null as string) as account_type
+        'not_applied' as user_id_hashed,
+        'not_applied' as account_type
     from {{ ref('stg_accounts_closed') }}
 ),
 
 reopened as (
+    -- same as closed: user_id_hashed and account_type not_applied.
     select
         cast(account_id_hashed as string) as account_id_hashed,
         cast(reopened_ts as timestamp) as event_ts,
         'reopened' as account_status,
-        cast(null as string) as user_id_hashed,
-        cast(null as string) as account_type
+        'not_applied' as user_id_hashed,
+        'not_applied' as account_type
     from {{ ref('stg_accounts_reopened') }}
 ),
 

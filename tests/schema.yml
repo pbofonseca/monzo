@@ -13,3 +13,9 @@ data_tests:
     description: |
       Business rule: each account has exactly one 'created' event and it must be the first event (by event_ts).
       After that, only closed/reopened may occur (closed and reopened can repeat).
+  - name: dim_account_one_current_per_account
+    description: |
+      SCD Type 2 invariant: each account has at most one current row (is_current = true). Allows 0 for closed-only accounts; fails only when 2+ current (e.g. reopened without a close).
+  - name: dim_account_no_overlapping_periods
+    description: |
+      SCD Type 2 invariant: no overlapping [valid_from, valid_to] per account; valid_from < valid_to when valid_to is set.
