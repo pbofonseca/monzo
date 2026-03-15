@@ -1,0 +1,19 @@
+---
+description: After opening a PR, run dbt build (or run + test) and record the result on the PR
+globs: "**/*.sql,**/*.yml,dbt_project.yml"
+alwaysApply: false
+---
+
+# dbt PR and testing
+
+After opening a PR (or when asked to create/update a PR):
+
+1. **Run dbt in a credentialed environment**  
+   In an environment where dbt credentials are set up (e.g. local with `DBT_PROFILES_DIR=.` and BigQuery auth, or CI), run:
+   - `dbt build`, or  
+   - `dbt run` then `dbt test`
+
+2. **Record the result on the PR**  
+   Add a comment or update the PR description with the outcome (e.g. “`dbt build` passed” or paste the relevant log). This documents that tests passed before merge.
+
+If credentials are not available in the current environment, note in the PR that maintainers should run `dbt build` (or `dbt run` + `dbt test`) locally or in CI before merging.
