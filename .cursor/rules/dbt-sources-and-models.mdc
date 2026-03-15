@@ -1,0 +1,26 @@
+---
+description: dbt sources layer and model patterns — all raw tables declared; staging/intermediate/marts conventions
+globs: models/**/*.sql,models/**/*.yml
+alwaysApply: false
+---
+
+# dbt Sources Layer & Model Patterns
+
+## Sources layer
+
+- **Single source of truth**: All raw tables from the project dataset(s) must be declared in `models/sources/_sources__sources.yml`. No raw table may be used without a source definition.
+- **No inline sources**: Do not add a `sources:` block in staging or elsewhere. Only `models/sources/` holds source definitions.
+- **Referencing sources**: In SQL models, always use `{{ source('source_name', 'table_name') }}` (e.g. `{{ source('monzo_datawarehouse', 'account_created') }}`). Never hardcode database/schema/table names for raw data.
+- **Adding a new table**: When a new table appears in the warehouse dataset, add it under the appropriate source in `_sources__sources.yml` first, then build or update the staging model that uses it.
+
+## Model layer rules (dbt best practices)
+
+- **Staging** (`models/staging/`): Select only from `source(...)`. Light cleaning, renaming, casting, deduplication. Names: `stg_<entity>.sql` (e.g. `stg_accounts_created`).
+- **Intermediate** (`models/intermediate/`): Select from staging and/or other intermediate models. Business logic, joins, one entity or use case per model. Names: `int_<entity>.sql` (e.g. `int_account_status_history`).
+- **Marts** (`models/marts/`): Select from intermediate (or staging when appropriate). Analytics-ready tables. Names: `dim_*`, `fct_*` (e.g. `dim_account`, `dim_date`, `fct_*`).
+- **No raw in intermediate/marts**: Intermediate and marts must not reference `source()`; they should use staging (or other int/mart models) only.
+
+## YAML and tests
+
+- Co-locate model schema and docs: `_<layer>__models.yml` in each layer. Use `_sources__sources.yml` for sources.
+- Add `description` (and `columns` where useful) for models and sources. Use `data_tests` (e.g. `unique`, `not_null`, `accepted_values`) and singular tests in `tests/` for business rules.

@@ -1,0 +1,22 @@
+# Sources layer: single source of truth for all raw tables in the project dataset(s).
+# Every table that exists in the source dataset must be declared here before use.
+# Reference in models as: {{ source('source_name', 'table_name') }}
+#
+# When adding a new table in the warehouse dataset, add it under the appropriate
+# source below. Then create or update a staging model that selects from it.
+# See docs/sources-layer.md for the full process.
+
+version: 2
+
+sources:
+  - name: monzo_datawarehouse
+    description: Raw / source data in BigQuery dataset monzo_datawarehouse. All tables in this dataset must be declared in this file.
+    database: analytics-take-home-test
+    schema: monzo_datawarehouse
+    tables:
+      - name: account_created
+        description: Raw account created events
+      - name: account_closed
+        description: Raw account closed events
+      - name: account_reopened
+        description: Raw account reopened events
