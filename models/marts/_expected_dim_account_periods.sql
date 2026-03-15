@@ -20,9 +20,9 @@ with history as (
 starts as (
     select
         account_id_hashed,
-        event_ts as valid_from
+        event_ts as valid_from_at
     from history
     where account_status in ('created', 'reopened')
 )
 
-select account_id_hashed, valid_from from starts
+select account_id_hashed, valid_from_at from starts

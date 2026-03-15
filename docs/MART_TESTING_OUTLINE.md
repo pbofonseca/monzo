@@ -37,7 +37,7 @@ dbt test --select dim_account
 Upstream changes (new columns, filters, or table swaps) can drop or duplicate “periods”. A reconciliation test catches missing or extra rows even when the schema still looks correct.
 
 **What to test**
-- Row count (or count per key) of `dim_account` matches the expected number of active periods derived from `int_account_status_history` (e.g. one row per `(account_id_hashed, valid_from)` from the intermediate logic).
+- Row count (or count per key) of `dim_account` matches the expected number of active periods derived from `int_account_status_history` (e.g. one row per `(account_id_hashed, valid_from_at)` from the intermediate logic).
 
 **Implementation**
 - dbt-expectations macro `expect_table_row_count_to_equal_other_table` comparing `dim_account` to model `_expected_dim_account_periods` (one row per period from `int_account_status_history`). See `_marts__models.yml` and `models/marts/_expected_dim_account_periods.sql`.
@@ -58,11 +58,11 @@ dbt test --select dim_account
 ## 3. SCD Type 2 invariants (one current row, no overlaps)
 
 **Why it matters**  
-The mart is SCD Type 2. Bugs or upstream changes can break invariants: multiple current rows per account, overlapping validity windows, or invalid `valid_from`/`valid_to` ordering.
+The mart is SCD Type 2. Bugs or upstream changes can break invariants: multiple current rows per account, overlapping validity windows, or invalid `valid_from_at`/`valid_to_at` ordering.
 
 **What to test**
 - For each `account_id_hashed`, exactly one row has `is_current = true`.
-- For each account, no two rows have overlapping `[valid_from, valid_to]` (and `valid_from < valid_to` when `valid_to` is not null).
+- For each account, no two rows have overlapping `[valid_from_at, valid_to_at]` (and `valid_from_at < valid_to_at` when `valid_to_at` is not null).
 
 **Implementation**
 - Singular data test(s): SQL that returns any row/account where (a) `count(*) where is_current` ≠ 1 per account, or (b) overlaps exist (e.g. self-join on `account_id_hashed` with overlapping intervals).
@@ -74,7 +74,7 @@ dbt test --select dim_account_one_current_per_account dim_account_no_overlapping
 dbt test --select dim_account
 ```
 
-**GX analogue**: Custom expectations or `expect_compound_columns_to_be_unique` for (account_id_hashed, valid_from); plus custom logic for “one current per account” and no overlaps.
+**GX analogue**: Custom expectations or `expect_compound_columns_to_be_unique` for (account_id_hashed, valid_from_at); plus custom logic for “one current per account” and no overlaps.
 
 ---
 
