@@ -7,8 +7,8 @@ version: 2
 models:
   - name: dim_date
     description: |
-      Date dimension (calendar) from dbt_date package. One row per day from 2020-01-01 to 2030-12-31.
-      Use for date attributes (day_of_week, month_name, quarter, prior_year_date, etc.) in reporting.
+      Calendar date dimension (from godatadriven/dbt_date). One row per day with day/week/month/quarter/year
+      and prior-year comparison fields. Use for date joins and time-based reporting.
     columns:
       - name: date_day
         description: Calendar date (one row per day).

@@ -1,4 +1,6 @@
-# dbt package dependencies. Run: dbt deps
+# dbt package dependencies.
+# Run from project root using the project venv (avoids dbt Cloud CLI / dbt_cloud.yml errors):
+#   DBT_PROFILES_DIR=. .venv/bin/dbt deps
 # https://docs.getdbt.com/docs/build/packages
 # metaplane/dbt_expectations is the maintained fork (calogica/dbt_expectations is deprecated).
 

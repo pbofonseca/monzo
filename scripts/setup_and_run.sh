@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
-# Authenticate with BigQuery and run dbt. Run from repo root: ./scripts/setup_and_run.sh
-#
-# DBT_PROFILES_DIR=. uses this project's profiles.yml (not ~/.dbt).
+# Next steps: authenticate with BigQuery, then run dbt.
+# Run from repo root: ./scripts/setup_and_run.sh
 
 set -e
 cd "$(dirname "$0")/.."
@@ -25,9 +24,6 @@ else
   echo "Or use a service account: in profiles.yml set method: service_account and keyfile: /path/to/key.json"
   exit 1
 fi
-
-echo "==> Installing dbt packages..."
-DBT_PROFILES_DIR=. dbt deps
 
 echo "==> Running dbt debug..."
 DBT_PROFILES_DIR=. dbt debug

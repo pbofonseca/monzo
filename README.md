@@ -82,14 +82,10 @@ Override project/location: `BQ_PROJECT_ID=myproject BQ_LOCATION=EU ./scripts/cre
 
 ## Getting started
 
-All runs use the repo’s `profiles.yml`.
-
-> **Tip:** Run every dbt command with `DBT_PROFILES_DIR=.` (or use `./scripts/setup_and_run.sh`). That makes dbt use this project’s `profiles.yml` instead of `~/.dbt`.
-
 ### 1. Prerequisites
 
 - Python 3.8+
-- [dbt-bigquery](https://pypi.org/project/dbt-bigquery/) (e.g. via project venv: `pip install -r requirements.txt` or `pip install dbt-bigquery`)
+- [dbt-bigquery](https://pypi.org/project/dbt-bigquery/) (e.g. via project venv: `pip install dbt-bigquery`)
 - Access to Google Cloud with BigQuery enabled
 
 ### 2. Google Cloud SDK (if needed)
@@ -127,21 +123,9 @@ Or manually:
 ```bash
 gcloud auth application-default login
 source .venv/bin/activate
-DBT_PROFILES_DIR=. dbt deps   # install packages (e.g. dbt_expectations, dbt_date); required so dbt uses local profiles
 DBT_PROFILES_DIR=. dbt debug
 DBT_PROFILES_DIR=. dbt run
 ```
-
-**Note:** Always set `DBT_PROFILES_DIR=.` when running dbt from this project so the local `profiles.yml` is used.
-
----
-
-## Maintaining dbt
-
-- **Upgrade dbt:** `pip install -U dbt-bigquery` (or `pip install -U -r requirements.txt`). Check [dbt-bigquery releases](https://pypi.org/project/dbt-bigquery/#history).
-- **Install/refresh packages:** `DBT_PROFILES_DIR=. dbt deps` (installs packages from `packages.yml`; run after clone or when `packages.yml` changes).
-- **Daily workflow:** `DBT_PROFILES_DIR=. dbt run`, `DBT_PROFILES_DIR=. dbt test`, `DBT_PROFILES_DIR=. dbt build` (run + test). Use `./scripts/setup_and_run.sh` for a full run from a clean state.
-- **Docs:** `DBT_PROFILES_DIR=. dbt docs generate` then `dbt docs serve`.
 
 ---
 

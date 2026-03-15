@@ -1,4 +1,12 @@
-{{ config(materialized='table') }}
+{{
+    config(
+        materialized='table',
+    )
+}}
 
-{# Date dimension for reporting; range covers typical analytics needs. #}
-{{ dbt_date.get_date_dimension('2020-01-01', '2030-12-31') }}
+/*
+    dim_date: Date dimension from godatadriven/dbt_date.
+    One row per calendar day with day/week/month/quarter/year and prior-year attributes.
+    Use for date joins and time-based analytics.
+*/
+{{ dbt_date.get_date_dimension('2017-01-01', '2030-12-31') }}
