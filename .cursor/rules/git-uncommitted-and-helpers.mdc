@@ -1,0 +1,14 @@
+---
+description: When resolving uncommitted changes, add local helper files to .gitignore instead of deleting them
+globs: .gitignore
+alwaysApply: false
+---
+
+# Git uncommitted changes and local helpers
+
+When resolving uncommitted or untracked changes:
+
+- **Local helper files** (e.g. PR description drafts like `.pr-*.md`, one-off templates, local notes): do **not** delete them. Add them (or a matching pattern) to `.gitignore` so the working tree stays clean without losing the file.
+- **Real project files** that should be committed: stage and commit them. Files that should not be in the repo: add to `.gitignore` if they are generated or local-only.
+
+Pattern to use in `.gitignore` for PR drafts and similar: `.pr-*.md` or the specific filename.

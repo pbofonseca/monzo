@@ -30,3 +30,6 @@ __pycache__/
 *-key.json
 *credentials*.json
 *.pem
+
+# Local helper files (PR drafts, templates, etc.)
+.pr-*.md
