@@ -1,0 +1,22 @@
+---
+description: Every change must follow project patterns — commits, PRs, dbt, git
+alwaysApply: true
+---
+
+# Project patterns (apply to every change)
+
+When you make or commit **any** change in this project, follow these patterns:
+
+1. **Commits**  
+   Use [Conventional Commits](.cursor/rules/conventional-commits.mdc): `type(scope): description` (e.g. `feat(dbt):`, `chore(git):`, `fix(staging):`).
+
+2. **dbt models and sources**  
+   Follow [dbt sources and models](.cursor/rules/dbt-sources-and-models.mdc): declare raw tables in `models/sources/`, staging from `source()` only, no raw refs in intermediate/marts.
+
+3. **PRs**  
+   Follow [dbt PR and testing](.cursor/rules/dbt-pr-and-testing.mdc): after opening a PR, run `dbt build` (or `dbt run` + `dbt test`) where credentials exist and record the result on the PR.
+
+4. **Uncommitted / local helpers**  
+   Follow [git uncommitted and helpers](.cursor/rules/git-uncommitted-and-helpers.mdc): for local helper files (e.g. `.pr-*.md`), add to `.gitignore` instead of deleting; only commit files that belong in the repo.
+
+Apply these whenever you propose a commit, create a PR, add dbt/source files, or resolve uncommitted changes.
