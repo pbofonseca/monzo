@@ -35,3 +35,13 @@ models:
         description: Account reopen timestamp (part of natural key with account_id_hashed)
         data_tests:
           - not_null
+
+  - name: stg_accounts_transactions
+    description: Staging layer for account_transactions. Deduplicated on (date, account_id_hashed).
+    columns:
+      - name: date
+        description: Transaction date (part of natural key with account_id_hashed)
+      - name: account_id_hashed
+        description: Hashed account identifier (part of natural key with date)
+      - name: transactions_num
+        description: Number of transactions for the account on the date

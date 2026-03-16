@@ -1,0 +1,23 @@
+---
+description: Run dbt with project venv and local profile; never use dbt Cloud CLI
+globs: "**/*.sql,**/*.yml,dbt_project.yml,scripts/*.sh,packages.yml"
+alwaysApply: false
+---
+
+# Do not use dbt Cloud CLI
+
+This project uses **dbt-core** in the project venv. The dbt Cloud CLI (if installed globally) expects `~/.dbt/dbt_cloud.yml` and will fail when that file is missing or not configured.
+
+**Always run dbt as:**
+
+- **Any dbt command** (run, test, build, parse, compile, docs, etc.):
+  ```bash
+  DBT_PROFILES_DIR=. .venv/bin/dbt <command>
+  ```
+- **Install packages only:**
+  ```bash
+  ./scripts/dbt_deps.sh
+  ```
+  or manually: `DBT_PROFILES_DIR=. .venv/bin/dbt deps`
+
+**Do not:** run plain `dbt` from PATH (that may invoke the Cloud CLI). Use `.venv/bin/dbt` and `DBT_PROFILES_DIR=.` so the project's `profiles.yml` is used and the Cloud CLI is never invoked.
