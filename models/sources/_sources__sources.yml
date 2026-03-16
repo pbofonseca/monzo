@@ -20,3 +20,12 @@ sources:
         description: Raw account closed events
       - name: account_reopened
         description: Raw account reopened events
+      - name: account_transactions
+        description: Raw account transaction counts by date and account
+        columns:
+          - name: date
+            description: Transaction date
+          - name: account_id_hashed
+            description: Hashed account identifier
+          - name: transactions_num
+            description: Number of transactions for the account on the date

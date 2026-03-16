@@ -14,9 +14,12 @@ When you make or commit **any** change in this project, follow these patterns:
    Follow [dbt sources and models](.cursor/rules/dbt-sources-and-models.mdc): declare raw tables in `models/sources/`, staging from `source()` only, no raw refs in intermediate/marts.
 
 3. **PRs**  
-   Follow [dbt PR and testing](.cursor/rules/dbt-pr-and-testing.mdc): after opening a PR, run `dbt build` (or `dbt run` + `dbt test`) where credentials exist and record the result on the PR.
+   Follow [dbt PR and testing](.cursor/rules/dbt-pr-and-testing.mdc): after opening a PR, run dbt (see [dbt no Cloud CLI](.cursor/rules/dbt-no-cloud-cli.mdc)) where credentials exist and record the result on the PR.
 
-4. **Uncommitted / local helpers**  
+4. **Running dbt**  
+   Do not use the dbt Cloud CLI. Use [dbt no Cloud CLI](.cursor/rules/dbt-no-cloud-cli.mdc): `DBT_PROFILES_DIR=. .venv/bin/dbt <command>` (or `./scripts/dbt_deps.sh` for deps).
+
+5. **Uncommitted / local helpers**  
    Follow [git uncommitted and helpers](.cursor/rules/git-uncommitted-and-helpers.mdc): for local helper files (e.g. `.pr-*.md`), add to `.gitignore` instead of deleting; only commit files that belong in the repo.
 
 Apply these whenever you propose a commit, create a PR, add dbt/source files, or resolve uncommitted changes.
