@@ -1,0 +1,33 @@
+version: 2
+
+models:
+  - name: int_account_status_history
+    description: |
+      Unified timeline of account lifecycle events (created, closed, reopened).
+      One row per event per account. Built from stg_accounts_created, stg_accounts_closed,
+      and stg_accounts_reopened.
+
+      Business rule (enforced by singular test):
+      exactly one 'created' per account, and it must be the first event.
+
+    columns:
+      - name: account_id_hashed
+        description: Hashed account identifier linking all events for the same account.
+
+      - name: event_ts
+        description: Timestamp of the lifecycle event.
+
+      - name: account_status
+        description: |
+          Lifecycle status of the account.
+          Possible values: created, closed, reopened.
+
+      - name: user_id_hashed
+        description: |
+          Hashed user identifier.
+          Only populated for 'created' events.
+
+      - name: account_type
+        description: |
+          Account type.
+          Only populated for 'created' events.

@@ -1,3 +1,0 @@
-# Source definitions live in the sources layer: models/sources/_sources__sources.yml
-# Staging models reference them via {{ source('monzo_datawarehouse', 'table_name') }}
-# Do not add a 'sources:' block here — all raw tables must be declared in the sources layer.

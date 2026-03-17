@@ -1,0 +1,26 @@
+version: 2
+
+models:
+  - name: int_user_activity_daily
+    description: |
+      One row per user per day with activity.
+      Built from stg_accounts_transactions joined with dim_account.
+
+      Grain: (date, user_id_hashed)
+
+    columns:
+      - name: date
+        description: Calendar date.
+        tests:
+          - not_null
+
+      - name: user_id_hashed
+        description: Hashed user identifier.
+        tests:
+          - not_null
+
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - date
+            - user_id_hashed
