@@ -1,0 +1,16 @@
+version: 2
+
+models:
+  - name: diagnose_dim_account_current_breakdown
+    description: |
+      Diagnostic model used to inspect violations of the SCD invariant
+      "one current row per account".
+
+      Rows represent counts of accounts grouped by the number of
+      rows marked as is_current.
+
+      Expected state:
+        current_count = 1 for all accounts.
+
+      current_count = 0 → closed-only accounts  
+      current_count >= 2 → overlapping open periods.

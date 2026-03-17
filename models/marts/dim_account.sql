@@ -1,3 +1,7 @@
+-- Model: dim_account
+-- Documentation: dim_account.yml
+-- Grain: one row per account active period (SCD Type 2)
+
 {{
     config(
         materialized='table',

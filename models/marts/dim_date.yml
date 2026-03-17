@@ -1,0 +1,13 @@
+version: 2
+
+models:
+  - name: dim_date
+    description: |
+      Calendar date dimension (from godatadriven/dbt_date). One row per day with day/week/month/quarter/year
+      and prior-year comparison fields. Use for date joins and time-based reporting.
+    columns:
+      - name: date_day
+        description: Calendar date (one row per day).
+        data_tests:
+          - unique
+          - not_null
