@@ -22,5 +22,7 @@ alwaysApply: false
 
 ## YAML and tests
 
-- Co-locate model schema and docs: `_<layer>__models.yml` in each layer. Use `_sources__sources.yml` for sources.
-- Add `description` (and `columns` where useful) for models and sources. Use `data_tests` (e.g. `unique`, `not_null`, `accepted_values`) and singular tests in `tests/` for business rules.
+- Co-locate YAML schema files next to models.
+- Example:
+models/intermediate/int_model.sql
+models/intermediate/int_model.yml
