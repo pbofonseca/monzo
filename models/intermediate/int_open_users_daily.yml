@@ -1,0 +1,30 @@
+version: 2
+
+models:
+  - name: int_open_users_daily
+    description: |
+      Users with at least one open account on a given day.
+      This table represents the eligible population for the daily metrics.
+      So the final metric becomes `active users / eligible users`.
+      This enforces the correct grain for the denominator, and without it, the denominator would be wrong.
+
+      Grain: (date_day, user_id_hashed)
+
+    columns:
+
+      - name: date_day
+        description: Calendar day when the user had at least one open account.
+        tests:
+          - not_null
+
+      - name: user_id_hashed
+        description: Hashed user identifier.
+        tests:
+          - not_null
+
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - date_day
+              - user_id_hashed

@@ -21,6 +21,7 @@ models:
 
     tests:
       - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - date
-            - user_id_hashed
+          arguments:
+            combination_of_columns:
+              - date
+              - user_id_hashed

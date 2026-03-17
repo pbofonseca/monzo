@@ -1,0 +1,11 @@
+version: 2
+
+models:
+  - name: expected_dim_account_periods
+    description: |
+      Test-support view used to reconcile the row count of dim_account.
+
+      Each row represents an expected active account period derived
+      from lifecycle events (created or reopened).
+
+      Used by dbt_expectations.expect_table_row_count_to_equal_other_table.

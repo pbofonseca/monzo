@@ -1,0 +1,120 @@
+version: 2
+
+models:
+  - name: dim_account
+    description: |
+      Account dimension (SCD Type 2) derived from `int_account_status_history`.
+
+      Grain:
+        One row per account per active period.
+
+      Active period definition:
+        From the moment an account is created or reopened (`valid_from_at`)
+        until the next closure event (`valid_to_at`). If `valid_to_at` is null,
+        the account is currently open.
+
+      Common use cases:
+        • point-in-time joins using `valid_from_at` / `valid_to_at`
+        • identifying the current state of an account via `is_current`
+        • joining with `dim_date` via `valid_from_date` or `valid_to_date`
+
+      Invariants enforced by tests:
+        • one current row per account
+        • no overlapping validity periods
+        • row count equals number of active periods derived from lifecycle history
+
+    data_tests:
+      # Ensures the number of SCD rows matches the number of lifecycle periods.
+      - dbt_expectations.expect_table_row_count_to_equal_other_table:
+          arguments:
+            compare_model: ref('expected_dim_account_periods')
+
+    columns:
+
+      - name: account_sk
+        description: |
+          Surrogate key representing a unique account version.
+
+          Generated as a hash of:
+            account_id_hashed + valid_from_at
+        data_tests:
+          - unique
+          - not_null
+
+      - name: account_id_hashed
+        description: |
+          Natural key identifying the account.
+          Links all lifecycle events belonging to the same account.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('int_account_status_history')
+                field: account_id_hashed
+
+      - name: user_id_hashed
+        description: |
+          Identifier of the user who owns the account.
+          Derived from the `created` event in account lifecycle history.
+
+      - name: account_type
+        description: |
+          Type of account.
+
+          Possible values:
+            • uk_retail_pot
+            • uk_retail
+            • uk_retail_joint
+
+          Sentinel values:
+            • not_informed → source did not provide a value
+            • not_applied → events other than account creation
+        data_tests:
+          - accepted_values:
+              arguments:
+                values:
+                  - uk_retail_pot
+                  - uk_retail
+                  - uk_retail_joint
+                  - not_informed
+                  - not_applied
+
+      - name: is_current
+        description: |
+          Indicates whether the row represents the current active
+          version of the account.
+
+          True when `valid_to_at` is null.
+        data_tests:
+          - not_null
+
+      - name: valid_from_at
+        description: |
+          Timestamp when the account became active.
+          Derived from either a `created` or `reopened` event.
+        data_tests:
+          - not_null
+
+      - name: valid_to_at
+        description: |
+          Timestamp when the account was closed.
+
+          Null when the account is still active.
+
+      - name: valid_from_date
+        description: |
+          Date portion of `valid_from_at`.
+
+          Provided to simplify joins with `dim_date` without casting.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_day
+
+      - name: valid_to_date
+        description: |
+          Date portion of `valid_to_at`.
+
+          Null when the account is currently open.
