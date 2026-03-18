@@ -305,6 +305,13 @@ Run tests:
 
 `dbt test`
 
+Generate and browse the project documentation:
+
+`dbt docs generate && dbt docs serve`
+or
+`dbt deps && dbt docs serve --port 8081`
+
+`Ctrl + c` to exit
 ---
 
 ## Conclusion
