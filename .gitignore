@@ -1,0 +1,36 @@
+# dbt artifacts
+target/
+dbt_packages/
+logs/
+*.log
+
+# Credentials & secrets (never commit)
+profiles.yml
+.user.yml
+.env
+.env.*
+*-key.json
+*credentials*.json
+*.pem
+
+# Python / virtual environments
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.pyo
+.Python
+*.so
+
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+.pr-*.md
+docs/merge-to-main.md
+
+# target/catalog.json
+# target/manifest.json

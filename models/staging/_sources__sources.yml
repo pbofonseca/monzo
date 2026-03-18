@@ -1,0 +1,72 @@
+# Sources layer: single source of truth for all raw tables in the project dataset(s).
+# Every table that exists in the source dataset must be declared here before use.
+# Reference in models as: {{ source('source_name', 'table_name') }}
+#
+# When adding a new table in the warehouse dataset, add it under the appropriate
+# source below. Then create or update a staging model that selects from it.
+# See docs/sources-layer.md for the full process.
+
+version: 2
+
+sources:
+  - name: monzo_datawarehouse
+    description: Raw / source data in BigQuery dataset monzo_datawarehouse. All tables in this dataset must be declared in this file.
+    database: analytics-take-home-test
+    schema: monzo_datawarehouse
+    tables:
+      - name: account_created
+        config:
+          loaded_at_field: created_ts
+        description: Raw account created events
+        columns:
+          - name: account_id_hashed
+            description: Hashed account identifier
+            tests:
+              - not_null
+          - name: user_id_hashed
+            description: Hashed user identifier
+            tests:
+              - not_null
+          - name: account_type
+            description: Account type
+          - name: created_ts
+            description: Creation timestamp
+            tests:
+              - not_null
+      - name: account_closed
+        config:
+          loaded_at_field: closed_ts
+        description: Raw account closed events
+        columns:
+          - name: account_id_hashed
+            description: Hashed account identifier
+            tests:
+              - not_null
+          - name: closed_ts
+            description: Closed timestamp
+            tests:
+              - not_null
+      - name: account_reopened
+        config:
+          loaded_at_field: reopened_ts
+        description: Raw account reopened events
+        columns:
+          - name: account_id_hashed
+            description: Hashed account identifier
+            tests:
+              - not_null
+          - name: reopened_ts
+            description: Reopened timestamp
+            tests:
+              - not_null
+      - name: account_transactions
+        config:
+          loaded_at_field: date
+        description: Raw account transaction counts by date and account
+        columns:
+          - name: date
+            description: Transaction date
+          - name: account_id_hashed
+            description: Hashed account identifier
+          - name: transactions_num
+            description: Number of transactions for the account on the date

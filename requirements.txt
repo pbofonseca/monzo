@@ -1,0 +1,4 @@
+# dbt with BigQuery adapter for local/CI runs.
+# Install: pip install -r requirements.txt
+# Run: dbt deps && dbt run
+dbt-bigquery>=1.7.0,<3

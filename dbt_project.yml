@@ -1,0 +1,59 @@
+# dbt_monzo - dbt project for BigQuery
+# https://docs.getdbt.com/reference/dbt_project.yml
+
+name: "dbt_monzo"
+version: "1.1.0"
+config-version: 2
+
+profile: "dbt_monzo"
+
+# Paths
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+docs-paths: ["docs"]
+
+target-path: "target"
+
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+# Models configuration
+models:
+  dbt_monzo:
+
+    # Persist documentation to BigQuery
+    +persist_docs:
+      relation: true
+      columns: true
+
+    # Staging layer: light transformations (rename, cast, basic cleaning)
+    staging:
+      +materialized: view
+      +schema: stg
+
+    # Intermediate layer: business logic and reusable transformations
+    intermediate:
+      +materialized: view
+      +schema: int
+
+    # Marts layer: final models for analytics consumption
+    marts:
+      +materialized: table
+      +schema: mrt
+
+      # Optional: subfolder-level configs (future-proofing)
+      dim:
+        +materialized: table
+
+      fct:
+        +materialized: incremental
+
+# Variables
+# Set the time zone to UTC for the dbt_date package
+vars:
+  dbt_date:time_zone: "UTC"

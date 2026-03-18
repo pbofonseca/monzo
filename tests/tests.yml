@@ -1,0 +1,32 @@
+# Descriptions for singular data tests in this directory.
+# See dbt docs: https://docs.getdbt.com/docs/build/data-tests#singular-data-tests
+# Tests are .sql files; dbt runs any select that returns rows as failures.
+# Ref: docs/diagnose-dim-account-current-breakdown.md
+# Ref: docs/faile-tests-walkthrough.md
+# Ref: docs/mart-testing-outline.md
+
+data_tests:
+  - name: stg_accounts_created_no_duplicates
+    description: Ensures no duplicate (account_id_hashed, created_ts) in stg_accounts_created.
+
+  - name: stg_accounts_closed_no_duplicates
+    description: Ensures no duplicate (account_id_hashed, closed_ts) in stg_accounts_closed.
+
+  - name: stg_accounts_reopened_no_duplicates
+    description: Ensures no duplicate (account_id_hashed, reopened_ts) in stg_accounts_reopened.
+
+  - name: stg_accounts_transactions_no_duplicates
+    description: Ensures no duplicate (date, account_id_hashed) in stg_accounts_transactions.
+
+  - name: int_account_status_history_one_created_first
+    description: |
+      Business rule: each account has exactly one 'created' event and it must be the first event (by event_ts).
+      After that, only closed/reopened may occur (closed and reopened can repeat).
+
+  - name: dim_account_one_current_per_account
+    description: |
+      SCD Type 2 invariant: each account has at most one current row (is_current = true). Allows 0 for closed-only accounts; fails only when 2+ current (e.g. reopened without a close).
+
+  - name: dim_account_no_overlapping_periods
+    description: |
+      SCD Type 2 invariant: no overlapping [valid_from_at, valid_to_at] per account; valid_from_at < valid_to_at when valid_to_at is set.

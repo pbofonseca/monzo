@@ -1,0 +1,40 @@
+version: 2
+
+models:
+  - name: fct_user_metrics_daily
+    description: |
+      Daily user activity metrics.
+
+      Grain: (date_day)
+
+      seven_day_active_rate = seven_day_active_users / users_with_open_account
+
+    columns:
+
+      - name: date_day
+        description: Calendar date.
+        tests:
+          - not_null
+          - unique
+
+      - name: daily_active_users
+        description: Number of users who performed at least one transaction on that day.
+
+      - name: seven_day_active_users
+        description: Users who performed at least one transaction in the 7 days ending on date_day.
+
+      - name: users_with_open_account
+        description: Users who had at least one open account on that day.
+
+      - name: seven_day_active_rate
+        description: Ratio between seven_day_active_users and users_with_open_account.
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 1
+          - not_null:
+              config:
+                where: users_with_open_account > 0
+
+        
