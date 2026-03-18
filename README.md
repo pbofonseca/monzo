@@ -313,7 +313,34 @@ or
 
 To access the lineage view, open the model and click `View Lineage Graph` at the bottom of the page.
 
----
+----
+
+## CI/CD & Engineering Practices
+
+This project includes a CI pipeline using GitHub Actions.
+
+### CI Pipeline
+
+On every pull request:
+- dbt parse is executed to validate:
+    - model dependencies
+    - references and sources
+    - macro compilation
+
+### Why parse instead of run?
+
+The CI pipeline is intentionally decoupled from the data warehouse to:
+- avoid dependency on credentials
+- ensure portability
+- validate the project structure independently
+
+### Branch Protection
+
+The main branch is protected with:
+- a pull request requirement
+- mandatory CI checks
+
+----
 
 ## Conclusion
 
