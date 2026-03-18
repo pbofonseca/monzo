@@ -1,0 +1,13 @@
+# Local profile for dbt_monzo (use DBT_PROFILES_DIR=. when running from project root)
+# Source: analytics-take-home-test.monzo_datawarehouse (read-only via dbt sources)
+# Downstream: psfs_ae_stg, psfs_ae_int, psfs_ae_mrt (create with scripts/create_psfs_ae_datasets.sh)
+dbt_monzo:
+  target: dev
+  outputs:
+    dev:
+      type: bigquery
+      method: oauth
+      project: "analytics-take-home-test"
+      dataset: "psfs_ae"   # base; +schema in dbt_project.yml yields psfs_ae_stg, psfs_ae_int, psfs_ae_mrt
+      location: "US"
+      threads: 4
