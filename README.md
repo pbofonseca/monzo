@@ -359,4 +359,5 @@ The goal was to reflect how data models are built and maintained in a real produ
 - Add common Bash commands to scripts/
 - Expand Great Expectations coverage
 - Improve lineage
+- Implement CI/CD best practices
 
