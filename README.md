@@ -1,3 +1,11 @@
+## About me
+
+Hi! I’m [Pablo Stéfano](https://www.linkedin.com/in/pbostefano/) :)
+I’m originally from Minas Gerais, but I currently live in Florianópolis (you should Google it. It’s amazing!).
+I’m also Alberto’s proud tutor 🐶
+
+In the next sections, I’ll walk you through Monzo’s take-home test
+
 ## Repository Structure
 
 This project follows a layered architecture:
@@ -329,7 +337,6 @@ The goal was to reflect how data models are built and maintained in a real produ
 [dbt documents: Generic data tests](https://docs.getdbt.com/docs/build/data-tests#generic-data-tests)
 [dbt documents: unique / not_null](https://docs.getdbt.com/reference/resource-properties/data-tests)
 [greatexpectations documents: GX + dbt tutorial](https://docs.greatexpectations.io/docs/reference/learn/integrations/dbt_tutorial/)
-
 
 ---
 
