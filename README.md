@@ -1,190 +1,282 @@
-# dbt_monzo
+## Repository Structure
 
-dbt project for transforming and modeling data in **BigQuery**. This project follows dbt best practices: moving data from **source-conformed** (raw) to **business-conformed** (analytics-ready) layers.
+This project follows a layered architecture:
 
----
+- `sources/`: raw data definitions
+- `staging/`: cleaned and standardized tables
+- `intermediate/`: business logic transformations
+- `marts/`: final analytical models
 
-## Business context & objectives
-
-<!--
-  Add here the business needs and objectives from your requirements document.
-  Source: https://drive.google.com/file/d/1J6me8K3I-u-5eSM4reKA4SwIFl5KN4bh/view
-
-  Suggested sections to fill from the PDF:
-  - Business goals (e.g. reporting, self-serve analytics, compliance)
-  - Key stakeholders and consumers of the data
-  - Main metrics and definitions the business cares about
-  - Scope (which domains, sources, or use cases this project covers)
-  - Success criteria or SLAs if any
--->
-
-**Business goals**
-
-- *(Describe the main business goals this project supports — e.g. unified reporting, self-serve analytics, regulatory reporting.)*
-
-**Key stakeholders & consumers**
-
-- *(Who uses these models? Analytics, finance, product, etc.)*
-
-**Main metrics & definitions**
-
-- *(List the main metrics and their business definitions so the project stays aligned with the same language.)*
-
-**Scope**
-
-- *(Which data domains, sources, or use cases are in scope for this project.)*
-
-**Success criteria**
-
-- *(How we know the project is successful — e.g. report coverage, freshness, adoption.)*
-
----
-
-## Data flow
-
-| Layer | BigQuery dataset | Purpose |
-|-------|------------------|---------|
-| **Source** (read-only) | `monzo_datawarehouse` | Raw data; referenced in dbt via `source('monzo_datawarehouse', 'table_name')` |
-| **Staging** | `psfs_ae_stg` | Light cleaning, renaming, typing — source-conformed building blocks |
-| **Intermediate** | `psfs_ae_int` | Business logic, joins, and transformations (not exposed to end users) |
-| **Marts** | `psfs_ae_mrt` | Analytics-ready tables for reporting and consumption |
-
-Create the downstream datasets once:
-
-```bash
-./scripts/create_psfs_ae_datasets.sh
-```
-
-Override project/location: `BQ_PROJECT_ID=myproject BQ_LOCATION=EU ./scripts/create_psfs_ae_datasets.sh`
-
----
-
-## Project structure
-
-```
-.
-├── README.md                 # This file — project overview and business context
-├── dbt_project.yml           # Project config; staging/int/marts → psfs_ae_*
-├── profiles.yml              # BigQuery connection (project, dataset, auth)
+monzo/
+│
 ├── models/
-│   ├── staging/              # → psfs_ae_stg (views)
-│   │   ├── _sources.yml      # Source definitions for monzo_datawarehouse
-│   │   └── *.sql
-│   ├── intermediate/        # → psfs_ae_int (views)
-│   └── marts/               # → psfs_ae_mrt (tables)
-├── scripts/
-│   ├── create_psfs_ae_datasets.sh
-│   └── setup_and_run.sh
-├── macros/, tests/, snapshots/, seeds/, analyses/
-```
+│   ├── sources/
+│   │   └── _sources__sources.yml
+│   │
+│   ├── staging/
+│   │   ├── stg_accounts_created.sql
+│   │   ├── stg_accounts_closed.sql
+│   │   ├── stg_accounts_reopened.sql
+│   │   ├── stg_accounts_transactions.sql
+│   │   └── _staging__models.yml
+│   │
+│   ├── intermediate/
+│   │   ├── int_account_status_history.sql
+│   │   ├── int_user_activity_daily.sql
+│   │   ├── int_open_users_daily.sql
+│   │   └── _intermediate__models.yml
+│   │
+│   ├── marts/
+│   │   ├── dim/
+│   │   │   ├── dim_account.sql
+│   │   │   ├── dim_date.sql
+│   │   │   └── _dim__models.yml
+│   │   │
+│   │   ├── fct/
+│   │   │   ├── fct_user_metrics_daily.sql
+│   │   │   └── fct_user_metrics_daily.yml
+│   │   │
+│   │   └── _marts__models.yml
+│   │
+│   └── exposures.yml
+│
+├── tests/
+│   ├── dim_account_one_current_per_account.sql
+│   └── dim_account_no_overlapping_periods.sql
+│
+├── analyses/
+│   ├── diagnose_one_current_breakdown.sql
+│   └── diagnose_one_current_example_history.sql
+│
+├── docs/
+│   ├── FAILED_TESTS_WALKTHROUGH.md
+│   └── sources-layer.md
+│
+├── dbt_project.yml
+├── packages.yml
+├── README.md
+└── .gitignore
 
----
+----
 
-## Getting started
+## Introduction
 
-### 1. Prerequisites
+This project implements two data models based on the `monzo_datawarehouse` dataset:
 
-- Python 3.8+
-- [dbt-bigquery](https://pypi.org/project/dbt-bigquery/) (e.g. via project venv: `pip install dbt-bigquery`)
-- Access to Google Cloud with BigQuery enabled
+1. A reliable and complete account dimension (`dim_account`)
+2. A daily fact table to compute user activity (`fct_user_metrics_daily`)
 
-### 2. Google Cloud SDK (if needed)
+The goal is to provide models that are:
 
-If `brew install --cask google-cloud-sdk` fails with "Provided python path ... does not exist":
+- Accurate and deterministic
+- Easy to understand and use
+- Robust to upstream data issues
+- Efficient to run at scale
 
-```bash
-./scripts/fix_gcloud_python.sh
-brew install --cask google-cloud-sdk
-```
+Throughout the project, I prioritised clarity of logic, explicit assumptions, and data reliability.
 
-Otherwise:
+----
 
-```bash
-export CLOUDSDK_PYTHON=/usr/bin/python3
-brew install --cask google-cloud-sdk
-```
+## Data Sources
 
-If `gcloud` is not in PATH after install:
+The project is based on four raw tables:
 
-```bash
-source "$(brew --prefix)/share/google-cloud-sdk/path.zsh.inc"
-```
+- `account_created`
+- `account_closed`
+- `account_reopened`
+- `account_transactions`
 
-### 3. Authenticate and run dbt
+These tables are append-only logs refreshed daily and may change over time.
 
-From the project root:
+All sources are declared in the `sources` layer and include basic data quality tests such as `not_null` checks.
 
-```bash
-./scripts/setup_and_run.sh
-```
+----
 
-Or manually:
+## Assumptions
 
-```bash
-gcloud auth application-default login
-source .venv/bin/activate
-DBT_PROFILES_DIR=. dbt debug
-DBT_PROFILES_DIR=. dbt run
-```
+Since the source data is not validated and may evolve, I made the following assumptions:
 
----
+- Account lifecycle events (`created`, `closed`, `reopened`) represent state transitions.
+- An account can be reopened multiple times, but should not have overlapping active periods.
+- A user is considered "eligible" if they have at least one open account on a given day.
+- Users with only closed accounts are excluded from the metric.
+- Transaction activity is captured at the account level and must be aggregated to the user level.
+- Late-arriving data is possible and must be handled in the incremental design.
 
-## Configuration
+These assumptions are enforced through modelling logic and tests where possible.
 
-### BigQuery connection (`profiles.yml`)
+----
 
-Use the project's `profiles.yml` (or copy from `profiles.yml.example` to `~/.dbt/profiles.yml`). Set:
+## Task 1: Accounts Model
 
-| Field | Description | Example |
-|-------|-------------|---------|
-| **project** | GCP project ID | `analytics-take-home-test` |
-| **dataset** | Base dataset (schema) for dbt; layers get suffixes | `psfs_ae` → psfs_ae_stg, _int, _mrt |
-| **method** | `oauth` (local) or `service_account` (CI/prod) | `oauth` |
-| **keyfile** | Path to service account JSON (only if `method: service_account`) | `~/.config/gcloud/dbt-sa-key.json` |
+### Overview
 
-Optional: `threads`, `location` (e.g. `US`), `timeout_seconds`.
+The `dim_account` model represents the full lifecycle of accounts using a Type 2 Slowly Changing Dimension (SCD).
 
-### Authentication
+Each row corresponds to a period where an account is in a specific state.
 
-- **Development:** `gcloud auth application-default login` then `method: oauth`.
-- **CI/production:** Create a service account with **BigQuery Data Editor** and **BigQuery Job User**, download a JSON key, set `method: service_account` and `keyfile` in `profiles.yml`.
+### Key Features
 
-### Verify setup
+- Tracks account lifecycle over time
+- Prevents overlapping validity periods
+- Identifies the current state of each account
+- Handles reopened accounts correctly
 
-```bash
-source .venv/bin/activate
-DBT_PROFILES_DIR=. dbt debug
-```
+### Grain
 
-Then:
+(account_id_hashed, valid_from_at)
 
-```bash
-DBT_PROFILES_DIR=. dbt run
-```
+### Why this design?
 
----
+The source data is event-based, so I transformed it into a period-based model to:
 
-## Documentation (dbt docs)
+- Make temporal analysis easier
+- Ensure consistency in downstream models
+- Avoid ambiguous interpretations of account state
 
-Generate and serve the dbt docs site (model DAG, descriptions, tests):
+----
 
-```bash
-DBT_PROFILES_DIR=. dbt docs generate
-DBT_PROFILES_DIR=. dbt docs serve
-```
+### Data Quality Tests (Task 1)
 
-Add `description:` and column-level docs in your YAML (e.g. `_sources.yml`, model schema files) so the generated docs are useful for stakeholders.
+To ensure reliability, I implemented the following key tests:
 
----
+1. One "created" event per account (ensures valid lifecycle start)
+2. No overlapping account periods
+3. At most one current record per account
+4. Accepted values for account_type (aligned with source domain)
+5. Row count consistency between expected and generated periods
 
-## Quick reference
+Additionally, diagnostic models were created to investigate failures and support debugging.
 
-| Task | Command |
-|------|---------|
-| Test connection | `DBT_PROFILES_DIR=. dbt debug` |
-| Run models | `DBT_PROFILES_DIR=. dbt run` |
-| Run tests | `DBT_PROFILES_DIR=. dbt test` |
-| Build docs | `DBT_PROFILES_DIR=. dbt docs generate && dbt docs serve` |
-| Production target | `DBT_PROFILES_DIR=. dbt run --target prod` |
+----
 
-Run all commands from the project root with the venv activated and `DBT_PROFILES_DIR=.` so the project's `profiles.yml` is used.
+## Task 2: 7-day Active Users
+
+### Definition
+
+7-day active rate:
+
+seven_day_active_rate =
+seven_day_active_users / users_with_open_account
+
+Where:
+
+- Numerator: users with at least one transaction in the last 7 days
+- Denominator: users with at least one open account on that day
+
+----
+
+### Model Design
+
+The solution is composed of:
+
+- `int_user_activity_daily`: user-level daily activity
+- `int_open_users_daily`: users with open accounts per day
+- `fct_user_metrics_daily`: final aggregated metrics
+
+### Grain
+
+(date_day)
+
+### Design Decisions
+
+- Aggregation is done at user level (not account level) to avoid double counting
+- A rolling 7-day window is computed using a date-driven join
+- The denominator is precomputed to ensure consistency and reuse
+
+----
+
+## Incremental Strategy
+
+The fact table is implemented as an incremental model with a repair window.
+
+### Why?
+
+The 7-day metric depends on a rolling window, meaning:
+
+- Activity on a given day affects the following 6 days
+- Late-arriving data can affect previously computed metrics
+
+### Approach
+
+- Recompute the last 14 days on each run
+- This window is larger than the 7-day metric window to capture late events
+- Data before the repair window is never modified
+
+### Important Detail
+
+The incremental boundary is based on source data (`int_user_activity_daily`), not the target table.
+
+This ensures:
+
+- Deterministic results
+- Protection against corrupted historical data
+- Stable and reproducible metrics
+
+### Outcome
+
+- Constant-cost pipeline
+- Correct handling of late-arriving data
+- No full refresh required after initial build
+
+----
+
+## Data Quality (Task 2)
+
+The following validations were implemented:
+
+- Unique constraint on (date_day)
+- Not null constraints on key metrics
+- Metric bounds validation (0 ≤ rate ≤ 1)
+- Logical validation: active users ≤ eligible users
+
+These tests ensure both technical correctness and business consistency.
+
+----
+
+## Performance Considerations
+
+- Partitioned by date_day
+- Clustered by date_day
+- Incremental processing with bounded repair window
+
+This ensures:
+
+- Efficient scans in BigQuery
+- Predictable cost over time
+- Scalability as data grows
+
+----
+
+## How to Run
+
+Install dependencies:
+
+`dbt deps`
+
+Run full build:
+
+`dbt build`
+
+Run specific model:
+
+`dbt build --select fct_user_metrics_daily`
+
+Run tests:
+
+`dbt test`
+
+----
+
+## Conclusion
+
+This project focuses on building reliable and intuitive data models rather than just producing outputs.
+
+Key priorities were:
+
+- Determinism: results should always be reproducible
+- Clarity: models should be easy to understand and use
+- Robustness: models should handle imperfect and evolving data
+- Scalability: pipelines should remain efficient over time
+
+The goal was to reflect how data models are built and maintained in a real production environment.

@@ -4,8 +4,9 @@
 ) }}
 
 -- Diagnostic model
--- Shows how many accounts violate the SCD invariant
--- "one current row per account".
+-- Shows how many accounts violate the one current row per account
+-- For more details, see the documentation in the models/diagnostics/diagnose_dim_account_current_breakdown.yml file 
+-- and the documentation in the docs/diagnose_dim_account_current_breakdown.md file
 
 with current_per_account as (
 

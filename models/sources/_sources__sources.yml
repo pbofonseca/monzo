@@ -15,6 +15,8 @@ sources:
     schema: monzo_datawarehouse
     tables:
       - name: account_created
+        config:
+          loaded_at_field: created_ts
         description: Raw account created events
         columns:
           - name: account_id_hashed
@@ -32,6 +34,8 @@ sources:
             tests:
               - not_null
       - name: account_closed
+        config:
+          loaded_at_field: closed_ts
         description: Raw account closed events
         columns:
           - name: account_id_hashed
@@ -43,6 +47,8 @@ sources:
             tests:
               - not_null
       - name: account_reopened
+        config:
+          loaded_at_field: reopened_ts
         description: Raw account reopened events
         columns:
           - name: account_id_hashed
@@ -54,6 +60,8 @@ sources:
             tests:
               - not_null
       - name: account_transactions
+        config:
+          loaded_at_field: date
         description: Raw account transaction counts by date and account
         columns:
           - name: date

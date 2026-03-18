@@ -9,7 +9,8 @@
     config(
         materialized='incremental',
         partition_by={"field": "date_day", "data_type": "date"},
-        cluster_by=["date_day"]
+        cluster_by=["date_day"],
+        unique_key="date_day"
     ) 
 }}
 
@@ -38,13 +39,15 @@ where date_day between
 
 {% if is_incremental() %}
 
--- Incremental repair window recompute the last 14 days relative to the latest stored partition
+-- Incremental repair window recompute the last 14 days based on source data (not the fact table)
 -- The window is larger than the 7-day metric window to capture late-arriving events
+-- Using the fact table ({{ this }}) could propagate duplicated or corrupted partitions
 -- Otherwise, transactions arriving 8–13 days late could permanently distort the metric
+-- Using the activity table guarantees a deterministic and stable boundary
 and date_day >= date_sub(
     (
         select coalesce(max(date_day), date '1900-01-01')
-        from {{ this }}
+        from {{ ref('int_user_activity_daily') }}
     ),
     interval 14 day
 )
