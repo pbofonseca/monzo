@@ -311,6 +311,8 @@ Generate and browse the project documentation:
 or
 `dbt deps && dbt docs serve --port 8081`
 
+To access the lineage view, open the model and click `View Lineage Graph` at the top of the page.
+
 ---
 
 ## Conclusion
