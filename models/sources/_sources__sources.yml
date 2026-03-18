@@ -16,10 +16,43 @@ sources:
     tables:
       - name: account_created
         description: Raw account created events
+        columns:
+          - name: account_id_hashed
+            description: Hashed account identifier
+            tests:
+              - not_null
+          - name: user_id_hashed
+            description: Hashed user identifier
+            tests:
+              - not_null
+          - name: account_type
+            description: Account type
+          - name: created_ts
+            description: Creation timestamp
+            tests:
+              - not_null
       - name: account_closed
         description: Raw account closed events
+        columns:
+          - name: account_id_hashed
+            description: Hashed account identifier
+            tests:
+              - not_null
+          - name: closed_ts
+            description: Closed timestamp
+            tests:
+              - not_null
       - name: account_reopened
         description: Raw account reopened events
+        columns:
+          - name: account_id_hashed
+            description: Hashed account identifier
+            tests:
+              - not_null
+          - name: reopened_ts
+            description: Reopened timestamp
+            tests:
+              - not_null
       - name: account_transactions
         description: Raw account transaction counts by date and account
         columns:

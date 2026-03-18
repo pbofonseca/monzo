@@ -1,3 +1,8 @@
+{{ config(
+    materialized='view',
+    tags=['diagnostic']
+) }}
+
 /*
   Diagnostic: breakdown of accounts failing "one current per account".
   Run after dbt compile; execute the compiled SQL in BigQuery (or use dbt show if you have a model that selects from this logic).

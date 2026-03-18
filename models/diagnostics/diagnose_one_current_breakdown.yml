@@ -1,0 +1,7 @@
+version: 2
+
+models:
+  - name: diagnose_dim_account_current_breakdown
+    description: |
+      Diagnostic breakdown of accounts by number of current rows.
+      Helps identify violations of the "one current per account" rule.

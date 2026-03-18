@@ -12,5 +12,5 @@ models:
       Expected state:
         current_count = 1 for all accounts.
 
-      current_count = 0 → closed-only accounts  
-      current_count >= 2 → overlapping open periods.
+      current_count = 0 -> closed-only accounts  
+      current_count >= 2 -> overlapping open periods.

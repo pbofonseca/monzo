@@ -34,5 +34,3 @@ Only YAML lives in this folder (no `.sql`). All `sources:` definitions for the p
 
 - **Staging**: `select ... from {{ source('monzo_datawarehouse', 'table_name') }}`
 - **Intermediate / marts**: Do not reference `source()`. Use refs to staging or intermediate models only.
-
-See `.cursor/rules/dbt-sources-and-models.mdc` for full conventions and patterns.
