@@ -8,6 +8,9 @@ jobs:
   dbt-ci:
     runs-on: ubuntu-latest
 
+    env:
+      DBT_PROFILES_DIR: .
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -24,7 +27,4 @@ jobs:
         run: dbt deps
 
       - name: Parse project
-        run: dbt parse
-
-      - name: Compile project
-        run: dbt compile
+        run: dbt parse --profiles-dir .

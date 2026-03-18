@@ -361,3 +361,5 @@ The goal was to reflect how data models are built and maintained in a real produ
 - Improve lineage
 - Implement CI/CD best practices
 
+
+CI setup test
