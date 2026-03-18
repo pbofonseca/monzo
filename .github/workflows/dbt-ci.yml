@@ -1,0 +1,30 @@
+name: dbt CI
+
+on:
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  dbt-ci:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Install dbt packages
+        run: dbt deps
+
+      - name: Parse project
+        run: dbt parse
+
+      - name: Compile project
+        run: dbt compile
