@@ -27,7 +27,4 @@ jobs:
         run: dbt deps
 
       - name: Parse project
-        run: dbt parse
-
-      - name: Compile project
-        run: dbt compile
+        run: dbt parse --profiles-dir .

@@ -5,7 +5,8 @@ logs/
 *.log
 
 # Credentials & secrets (never commit)
-profiles.yml
+- profiles.yml
++ profiles.yml.example
 .user.yml
 .env
 .env.*
