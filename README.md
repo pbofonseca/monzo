@@ -10,10 +10,10 @@ In the next sections, I’ll walk you through Monzo’s take-home test
 
 This project follows a layered architecture:
 
-- `sources/`: raw data definitions
-- `staging/`: cleaned and standardized tables
-- `intermediate/`: business logic transformations
-- `marts/`: final analytical models
+- `sources/`: raw data definitions --> [analytics-take-home-test.monzo_datawarehouse](https://console.cloud.google.com/bigquery?ws=!1m4!1m3!3m2!1sanalytics-take-home-test!2smonzo_datawarehouse)
+- `staging/`: cleaned and standardized tables --> [analytics-take-home-test.psfs_ae_stg](https://console.cloud.google.com/bigquery?ws=!1m4!1m3!3m2!1sanalytics-take-home-test!2spsfs_ae_stg)
+- `intermediate/`: business logic transformations --> [analytics-take-home-test.psfs_ae_int](https://console.cloud.google.com/bigquery?ws=!1m4!1m3!3m2!1sanalytics-take-home-test!2spsfs_ae_int)
+- `marts/`: final analytical models --> [analytics-take-home-test.psfs_ae_mrt](https://console.cloud.google.com/bigquery?ws=!1m4!1m3!3m2!1sanalytics-take-home-test!2spsfs_ae_mrt)
 
 ```
 monzo/
@@ -311,7 +311,6 @@ Generate and browse the project documentation:
 or
 `dbt deps && dbt docs serve --port 8081`
 
-`Ctrl + c` to exit
 ---
 
 ## Conclusion
@@ -333,17 +332,17 @@ The goal was to reflect how data models are built and maintained in a real produ
 
 ## References
 
-[Monzo article: Mapping our data journey with column lineage](https://medium.com/data-monzo/mapping-our-data-journey-with-column-lineage-56209c00606d)
-[Monzo article: The many layers of data lineage](https://medium.com/data-monzo/the-many-layers-of-data-lineage-2eb898709ad3)
-[Monzo article: An introduction to Monzo’s data stack](https://medium.com/data-monzo/an-introduction-to-monzos-data-stack-827ae531bc99)
-[Monzo article: How we use incremental modelling to handle billions of events every day](https://monzo.com/blog/how-we-use-incremental-modelling-to-handle-billions-of-events-every-day)
-[dbt documents: Add snapshot to your DAG](https://docs.getdbt.com/docs/build/snapshots?version=1.12)
-[dbt documents: How we style our dbt models](https://docs.getdbt.com/best-practices/how-we-style/1-how-we-style-our-dbt-models?version=1.12)
-[dbt documents: Add data tests to your DAG](https://docs.getdbt.com/docs/build/data-tests)
-[dbt documents: dbt-expectations](https://hub.getdbt.com/calogica/dbt_expectations/latest/)
-[dbt documents: Generic data tests](https://docs.getdbt.com/docs/build/data-tests#generic-data-tests)
-[dbt documents: unique / not_null](https://docs.getdbt.com/reference/resource-properties/data-tests)
-[greatexpectations documents: GX + dbt tutorial](https://docs.greatexpectations.io/docs/reference/learn/integrations/dbt_tutorial/)
+- [Monzo article: Mapping our data journey with column lineage](https://medium.com/data-monzo/mapping-our-data-journey-with-column-lineage-56209c00606d)  
+- [Monzo article: The many layers of data lineage](https://medium.com/data-monzo/the-many-layers-of-data-lineage-2eb898709ad3)
+- [Monzo article: An introduction to Monzo’s data stack](https://medium.com/data-monzo/an-introduction-to-monzos-data-stack-827ae531bc99)
+- [Monzo article: How we use incremental modelling to handle billions of events every day](https://monzo.com/blog/how-we-use-incremental-modelling-to-handle-billions-of-events-every-day)
+- [dbt documents: Add snapshot to your DAG](https://docs.getdbt.com/docs/build/snapshots?version=1.12)
+- [dbt documents: How we style our dbt models](https://docs.getdbt.com/best-practices/how-we-style/1-how-we-style-our-dbt-models?version=1.12)
+- [dbt documents: Add data tests to your DAG](https://docs.getdbt.com/docs/build/data-tests)
+- [dbt documents: dbt-expectations](https://hub.getdbt.com/calogica/dbt_expectations/latest/)
+- [dbt documents: Generic data tests](https://docs.getdbt.com/docs/build/data-tests#generic-data-tests)
+- [dbt documents: unique / not_null](https://docs.getdbt.com/reference/resource-properties/data-tests)
+- [greatexpectations documents: GX + dbt tutorial](https://docs.greatexpectations.io/docs/reference/learn/integrations/dbt_tutorial/)
 
 ---
 
