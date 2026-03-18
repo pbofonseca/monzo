@@ -3,8 +3,6 @@ target/
 dbt_packages/
 logs/
 *.log
-# Generated lineage UI (miswag-dbt-lineage)
-docs/lineage/
 # Do not commit credentials or local profile
 profiles.yml
 .user.yml
